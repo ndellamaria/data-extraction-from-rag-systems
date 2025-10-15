@@ -141,11 +141,7 @@ class WikipediaArticleFetcher:
 
                 if content:
                     # Write article with separator
-                    f.write(f"{'='*80}\n")
-                    f.write(f"TITLE: {title}\n")
-                    f.write(f"{'='*80}\n\n")
-                    f.write(content)
-                    f.write(f"\n\n{'='*80}\n\n")
+                    f.write(content.strip() + "\n")
                     f.flush()  # Flush to disk periodically
 
                 # Rate limiting - be respectful to Wikipedia servers
@@ -159,8 +155,8 @@ def main():
     Main function - configure your parameters here.
     """
     # CONFIGURATION - EDIT THESE VALUES
-    LANGUAGE = "fr"  # Wikipedia language code (de=German, en=English, fr=French, etc.)
-    SINCE_DATE = "2025-06-01"  # Fetch articles created after this date (YYYY-MM-DD)
+    LANGUAGE = "zh"  # Wikipedia language code (de=German, en=English, fr=French, etc.)
+    SINCE_DATE = "2025-01-01"  # Fetch articles created after this date (YYYY-MM-DD)
     MAX_ARTICLES = 10000  # Maximum number of articles to fetch
     OUTPUT_FILE = f"wikipedia_articles_{LANGUAGE}_{MAX_ARTICLES}_since_{SINCE_DATE}.txt"  # Output file path
 
