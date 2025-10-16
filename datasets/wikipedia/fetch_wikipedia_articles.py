@@ -13,7 +13,7 @@ import time
 import json
 from datetime import datetime
 from typing import List, Dict, Optional
-
+import argparse
 
 class WikipediaArticleFetcher:
     """Fetches Wikipedia articles based on language and creation date."""
@@ -152,17 +152,25 @@ class WikipediaArticleFetcher:
 
 def main():
     """
-    Main function - configure your parameters here.
+    Main function - configure parameters via command line or defaults.
     """
-    # CONFIGURATION - EDIT THESE VALUES
-    LANGUAGE = "zh"  # Wikipedia language code (de=German, en=English, fr=French, etc.)
-    SINCE_DATE = "2025-01-01"  # Fetch articles created after this date (YYYY-MM-DD)
-    MAX_ARTICLES = 10000  # Maximum number of articles to fetch
-    OUTPUT_FILE = f"wikipedia_articles_{LANGUAGE}_{MAX_ARTICLES}_since_{SINCE_DATE}.txt"  # Output file path
+    parser = argparse.ArgumentParser(description="Fetch recent Wikipedia articles.")
+    parser.add_argument("--language", default="en", help="Wikipedia language code (e.g., en, de, fr, zh)")
+    parser.add_argument("--since_date", default="2025-01-01", help="Fetch articles created after this date (YYYY-MM-DD)")
+    parser.add_argument("--max_articles", type=int, default=10000, help="Maximum number of articles to fetch")
+    parser.add_argument("--output_file", default=None, help="Output file path (optional)")
+
+    args = parser.parse_args()
+
+    # Default output filename if not provided
+    output_file = (
+        args.output_file
+        or f"wikipedia_articles_{args.language}_{args.max_articles}_since_{args.since_date}.txt"
+    )
 
     # Create fetcher and run
-    fetcher = WikipediaArticleFetcher(language=LANGUAGE, max_articles=MAX_ARTICLES)
-    fetcher.fetch_and_save(since_date=SINCE_DATE, output_file=OUTPUT_FILE)
+    fetcher = WikipediaArticleFetcher(language=args.language, max_articles=args.max_articles)
+    fetcher.fetch_and_save(since_date=args.since_date, output_file=output_file)
 
 
 if __name__ == "__main__":
