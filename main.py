@@ -1,11 +1,3 @@
-# %%
-!pip install transformers torch accelerate evaluate nltk rank-bm25 datasets sacrebleu bert_score
-!pip install rouge_score
-
-import warnings
-warnings.filterwarnings('ignore')
-
-# %%
 import torch
 import numpy as np
 import pandas as pd
