@@ -13,10 +13,14 @@ Output:
       doc_id, chunk_id, resource_type, fhir_id, source_file, metadata, text
 
 Usage:
-  python fhir_to_rag.py INPUT_PATH \
-    --out out.jsonl \
-    --max-chars 2000 \
-    --overlap 200
+  - Default (no args): process all JSON files under datasets/fhir and write
+    datasets/fhir/rag_chunks.jsonl
+
+  - Custom:
+      python fhir_to_rag.py INPUT_PATH [INPUT_PATH ...] \
+        --out out.jsonl \
+        --max-chars 2000 \
+        --overlap 200
 """
 
 import argparse
@@ -505,19 +509,27 @@ def process_file(path: str, max_chars: int, overlap: int) -> List[Dict[str, Any]
 
 def main():
     ap = argparse.ArgumentParser(description="Convert FHIR JSON/NDJSON to RAG-ready JSONL with overlapping chunks.")
-    ap.add_argument("inputs", nargs="+", help="Input files or directories (FHIR JSON, Bundles, or NDJSON).")
-    ap.add_argument("--out", default="-", help="Output JSONL path (default: stdout).")
+    ap.add_argument("inputs", nargs="*", help="Input files or directories (FHIR JSON, Bundles, or NDJSON). If omitted, defaults to datasets/fhir.")
+    ap.add_argument("--out", default=None, help="Output JSONL path (default: datasets/fhir/rag_chunks.jsonl; use '-' for stdout).")
     ap.add_argument("--max-chars", type=int, default=2000, help="Max characters per chunk (default: 2000).")
     ap.add_argument("--overlap", type=int, default=200, help="Character overlap between chunks (default: 200).")
     args = ap.parse_args()
+
+    # Determine defaults relative to this file, so it works from anywhere
+    repo_root = os.path.abspath(os.path.dirname(__file__))
+    default_input_dir = os.path.join(repo_root, "datasets", "fhir")
+    default_out_path = os.path.join(default_input_dir, "rag_chunks.jsonl")
+
+    inputs = args.inputs if args.inputs else [default_input_dir]
+    out_path = default_out_path if args.out is None else args.out
 
     if args.overlap >= args.max_chars:
         print("--overlap must be smaller than --max-chars", file=sys.stderr)
         sys.exit(2)
 
-    total = process_paths(args.inputs, args.out, args.max_chars, args.overlap)
-    if args.out != "-":
-        print(f"Wrote {total} chunks to {args.out}", file=sys.stderr)
+    total = process_paths(inputs, out_path, args.max_chars, args.overlap)
+    if out_path != "-":
+        print(f"Wrote {total} chunks to {out_path}", file=sys.stderr)
 
 if __name__ == "__main__":
     main()
