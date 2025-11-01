@@ -6,7 +6,7 @@ CS 2881 AI Safety Assignment to recreate and extend paper: Follow My Instruction
 apt-get install python3.11
 python -m venv env
 source env/bin/activate
-pip install transformers torch accelerate evaluate nltk rank-bm25 datasets sacrebleu bert_score rouge_score
+pip install transformers torch accelerate evaluate nltk rank-bm25 datasets sacrebleu bert_score rouge_score hf_transfer
 touch credentials.json
 ```
 
